@@ -36,8 +36,8 @@ int main()
 
 		// Yield to the OS
 		s3eDeviceYield(0);
-	}
-
+	}	
+		
 	Iw2DTerminate();
 	delete app;
 	return 0;

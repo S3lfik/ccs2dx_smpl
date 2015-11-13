@@ -10,6 +10,8 @@
  * EULA and have agreed to be bound by its terms.
  */
 #include "GameLayer.h"
+#include "HUDlayer.h"
+#include "BackgroundLayer.h"
 #include "MainMenuScene.h"
 #include "GameOverScene.h"
 #include <memory>
@@ -45,7 +47,6 @@ bool GameLayer::init()
     this->schedule(schedule_selector(GameLayer::update));
 	this->schedule(schedule_selector(GameLayer::spawnEnemies), 3.f);
 	
-
     // COCOS2D TIP
     // Create Cocos2D objects here
 	m_visibleSize = CCDirector::sharedDirector()->getVisibleSize();
@@ -64,10 +65,12 @@ bool GameLayer::init()
 	m_jumpTimer = 0.f;
 	m_score = 0;
 	m_hp = 100;
+	m_paused = false;
 
-	CCSprite* sprite = CCSprite::create("./textures/Bg.png");
-	sprite->setPosition(CCPoint(m_visibleSize.width / 2, m_visibleSize.height / 2));
-	this->addChild(sprite, -5);
+	m_background = BackgroundLayer::createBackground(5.f);
+	this->addChild((CCLayer*)m_background, -20);
+	m_hudLayer = (HUDLayer*)HUDLayer::scene();
+	this->addChild(m_hudLayer);
 
 	m_hero = CCSprite::create("./textures/tinyBazooka.png");
 	m_hero->setPosition(CCPoint(m_visibleSize.width / 4, m_visibleSize.height / 2));
@@ -95,10 +98,23 @@ bool GameLayer::init()
 
 void GameLayer::update(float dt)
 {
-	if (s3eDeviceCheckPauseRequest())
-		std::cout << "device paused" << std::endl;
-	else if (!s3eDeviceCheckPauseRequest())
+	if (!m_paused)
 	{
+		if (s3eDeviceCheckPauseRequest())
+		{
+			std::cout << "device paused" << std::endl;
+			m_paused = true;
+		}
+	}
+	else
+	{
+		if (!s3eDeviceCheckPauseRequest())
+		{
+			std::cout << "device resumed" << std::endl;
+			m_paused = false;
+		}
+		else
+			return;
 	}
 
 	if (m_jumping)
@@ -131,6 +147,7 @@ void GameLayer::update(float dt)
 	{
 		gameOver();
 	}
+	m_background->update();
 	// Update Box2D world
 	//world->Step(dt, 6, 3);
 
@@ -157,7 +174,7 @@ void GameLayer::updateProjectiles(float dt)
 			}
 			else
 			{
-				for (int i = 0; i < m_enemies->count(); ++i)
+				for (uint i = 0; i < m_enemies->count(); ++i)
 				{
 					if (checkCollisions((CCSprite*)m_enemies->objectAtIndex(i), proj) && proj->getType() == Projectile::Rocket)
 					{
@@ -223,9 +240,8 @@ void GameLayer::updateEnemies(float dt)
 void GameLayer::updateScore()
 {
 	++m_score;
-	char score[100];
-	sprintf(score, "S: %d", m_score);
-	m_scoreLabel->setString(score);
+	HUDLayer *mhl = dynamic_cast<HUDLayer*>(m_hudLayer);
+	mhl->updateScoreLabel(m_score);
 }
 
 void GameLayer::updateHealth(int dmg)
@@ -233,9 +249,9 @@ void GameLayer::updateHealth(int dmg)
 	m_hp -= dmg;
 	if (m_hp < 0)
 		m_hp = 0;
-	char hp[100];
-	sprintf(hp, "L: %d", m_hp);
-	m_healthLabel->setString(hp);
+
+	HUDLayer *mhl = dynamic_cast<HUDLayer*>(m_hudLayer);
+	mhl->updateHealthLable(m_score);	
 }
 
 void GameLayer::spawnEnemies(float dt)
@@ -288,6 +304,41 @@ void GameLayer::gameOver()
 {
 	CCUserDefault::sharedUserDefault()->setIntegerForKey("highScore", m_score);
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, GameOverScene::scene()));
+}
+
+void GameLayer::pauseGame()
+{
+	std::cout << "GameLayer::pauseGame" << std::endl;
+	//this->unscheduleUpdate();
+	//this->unschedule(schedule_selector(GameLayer::spawnEnemies));
+	//this->schedule(schedule_selector(GameLayer::spawnEnemies), 3.f);
+	//if (m_enemies && m_enemies->count() > 0)
+	//{
+	//	std::cout << "GameLayer::pauseGame::count = " << m_enemies->count() << std::endl;
+	//	for (unsigned int i = 0; i < m_enemies->count(); ++i)
+	//	{
+	//		Enemy* en = (Enemy*)m_enemies->objectAtIndex(i);
+	//		en->pauseSchedulerAndActions();
+	//	}
+	//}
+	//m_paused = true;
+	std::cout << "GameLayer::pauseGame" << std::endl;
+}
+
+void GameLayer::resumeGame()
+{
+	std::cout << "GameLayer::resumeGame" << std::endl;
+	//this->unscheduleUpdate();
+	//this->schedule(schedule_selector(GameLayer::spawnEnemies), 3.f);
+	//if (m_enemies->count() > 0)
+	//{
+	//	for (uint i = 0; i < m_enemies->count(); ++i)
+	//	{
+	//		Enemy* en = (Enemy*)m_enemies->objectAtIndex(i);
+	//		en->resumeSchedulerAndActions();
+	//	}
+	//}
+	//m_paused = false;
 }
 
 bool GameLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)

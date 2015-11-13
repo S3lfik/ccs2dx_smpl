@@ -20,7 +20,7 @@
 #include <queue>
 #include <vector>
 
-
+class BackgroundLayer;
 
 using namespace cocos2d;
 
@@ -55,6 +55,9 @@ public:
 	void updateScore();
 	void updateHealth(int dmg);
 
+	void pauseGame();
+	void resumeGame();
+
 	
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
 	virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
@@ -88,8 +91,13 @@ private:
 	int m_score;
 	int m_hp;
 
+	CCLayer* m_hudLayer;
+	BackgroundLayer* m_background;
+
 	CCLabelBMFont* m_scoreLabel;
 	CCLabelBMFont* m_healthLabel;
+
+	bool m_paused;
 };
 
 #endif // __GAMELAYER_H__
