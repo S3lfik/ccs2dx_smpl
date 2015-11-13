@@ -14,14 +14,8 @@ public:
 	HUDLayer();
 	~HUDLayer();
 
-	// Init method
-	virtual bool init();
-
-	// Create instance of scene
-	static CCScene* scene();
-
-	// preprocessor macro for "static create()" constructor ( node() deprecated )
-	CREATE_FUNC(HUDLayer);
+	static HUDLayer* createHUDLayer();
+	bool initHUDLayer();
 
 	void updateScoreLabel(int score);
 	void updateHealthLable(int hp);

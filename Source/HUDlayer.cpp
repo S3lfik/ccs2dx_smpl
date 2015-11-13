@@ -16,8 +16,6 @@
 
 HUDLayer::HUDLayer()
 {
-	m_visibleSize = CCDirector::sharedDirector()->getVisibleSize();
-	m_origin = CCDirector::sharedDirector()->getVisibleOrigin();
 }
 HUDLayer::~HUDLayer()
 {
@@ -33,33 +31,30 @@ HUDLayer::~HUDLayer()
 	std::cout << m_resumeMenu->retainCount() << std::endl;
 }
 
-CCScene* HUDLayer::scene() // <- return layer
+HUDLayer* HUDLayer::createHUDLayer()
 {
-	// 'scene' is an autorelease object
-	CCScene *scene = CCScene::create();
-
-	// 'layer' is an autorelease object
-	HUDLayer *layer = HUDLayer::create();
-
-	// Add layer as a child to scene
-	scene->addChild(layer);
-
-	// Return the scene
-	return scene;
+	HUDLayer* ob = new HUDLayer();
+	if (ob && ob->initHUDLayer())
+	{
+		ob->autorelease();
+		return ob;
+	}
+	CC_SAFE_DELETE(ob);
+	return NULL;
 }
 
 // on "init" you need to initialize your instance
-bool HUDLayer::init()
+bool HUDLayer::initHUDLayer()
 {
 	if (!CCLayer::init())
 		return false;
 
-	
+	m_visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+	m_origin = CCDirector::sharedDirector()->getVisibleOrigin();
+
 	// Create main loop
 	this->setTouchEnabled(true);
 
-	// COCOS2D TIP
-	// Create Cocos2D objects here
 	m_visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 	m_origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
@@ -68,13 +63,16 @@ bool HUDLayer::init()
 /// Labels
 	m_scoreLabel = CCLabelBMFont::create("S: 0", "./fonts/PixelFont.fnt");
 	m_scoreLabel->setPosition(m_visibleSize.width * 0.05f, m_visibleSize.height* 0.9f);
+	m_scoreLabel->setAlignment(CCTextAlignment::kCCTextAlignmentLeft);
 	m_scoreLabel->setScale(0.5f);
 	m_scoreLabel->setAnchorPoint(CCPoint(0.f, 0.5f));
 	this->addChild(m_scoreLabel, 5);
-
-	m_healthLabel = CCLabelBMFont::create("L: 100", "./fonts/PixelFont.fnt");
-	m_healthLabel->setPosition(m_visibleSize.width * 0.1f, m_visibleSize.height* 0.1f);
+	//
+	m_healthLabel = CCLabelBMFont::create("HP: 100", "./fonts/PixelFont.fnt");
+	m_healthLabel->setPosition(m_visibleSize.width * 0.05f, m_visibleSize.height* 0.1f);
+	m_healthLabel->setAlignment(CCTextAlignment::kCCTextAlignmentLeft);
 	m_healthLabel->setScale(0.5f);
+	m_healthLabel->setAnchorPoint(CCPoint(0.f, 0.5f));
 	this->addChild(m_healthLabel, 5);
 ///
 
@@ -109,7 +107,7 @@ void HUDLayer::updateScoreLabel(int score)
 void HUDLayer::updateHealthLable(int hp)
 {
 	char health[100];
-	sprintf(health, "L: %d", hp);
+	sprintf(health, "HP: %d", hp);
 	m_healthLabel->setString(health);
 }
 

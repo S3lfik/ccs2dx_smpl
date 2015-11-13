@@ -60,7 +60,6 @@ bool GameLayer::init()
 	m_leftRect = CCRectMake(0.f, 0.f, m_visibleSize.width / 2, m_visibleSize.height);
 	m_rightRect = CCRectMake(m_visibleSize.width / 2, 0.f, m_visibleSize.width / 2, m_visibleSize.height);
 
-	m_gravity = ccp(0.f, -5.f);
 	m_jumping = false;
 	m_jumpTimer = 0.f;
 	m_score = 0;
@@ -69,29 +68,12 @@ bool GameLayer::init()
 
 	m_background = BackgroundLayer::createBackground(5.f);
 	this->addChild((CCLayer*)m_background, -20);
-	m_hudLayer = (HUDLayer*)HUDLayer::scene();
+	m_hudLayer = HUDLayer::createHUDLayer();
 	this->addChild(m_hudLayer);
 
 	m_hero = CCSprite::create("./textures/tinyBazooka.png");
-	m_hero->setPosition(CCPoint(m_visibleSize.width / 4, m_visibleSize.height / 2));
+	m_hero->setPosition(CCPoint(m_visibleSize.width / 4, m_visibleSize.height / 2)); 
 	this->addChild(m_hero, -1);
-
-	m_scoreLabel = CCLabelBMFont::create("S: 0", "./fonts/PixelFont.fnt");
-	m_scoreLabel->setPosition(m_visibleSize.width * 0.05f, m_visibleSize.height* 0.9f);
-	m_scoreLabel->setScale(0.5f);
-	m_scoreLabel->setAnchorPoint(CCPoint(0.f, 0.5f)); 
-	this->addChild(m_scoreLabel, 5);
-
-	m_healthLabel = CCLabelBMFont::create("L: 100", "./fonts/PixelFont.fnt");
-	m_healthLabel->setPosition(m_visibleSize.width * 0.9f, m_visibleSize.height* 0.9f);
-	m_healthLabel->setScale(0.5f);
-	this->addChild(m_healthLabel, 5);
-
-	// Create Box2D world
-	//world = new b2World(b2Vec2(0, 100));
-
-    // BOX2D TIP
-    // Create Box2D objects here
 
     return true;
 }
