@@ -15,4 +15,11 @@ public:
 	void update(float dt);
 	void shoot(float dt);
 
+	void setShootingInterval(float interval);
+	float getShootingInterval() const;
+
+private:
+	float m_timer;
+	float m_shootingInterval;
+
 };

@@ -1,5 +1,5 @@
 #include "MainMenuScene.h"
-#include "GameLayer.h"
+#include "GameScene.h"
 #include <iostream>
 
 MainMenuLayer::~MainMenuLayer()
@@ -59,5 +59,5 @@ void MainMenuLayer::update(float dt)
 
 void MainMenuLayer::goToGameScene(CCObject* sender)
 {
-	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, GameLayer::scene()));
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, GameScene::scene()));
 }

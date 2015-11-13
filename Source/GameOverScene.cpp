@@ -10,7 +10,7 @@
 * EULA and have agreed to be bound by its terms.
 */
 #include "GameOverScene.h"
-#include "GameLayer.h"
+#include "GameScene.h"
 #include "MainMenuScene.h"
 #include <iostream>
 
@@ -89,7 +89,7 @@ void GameOverScene::update(float dt)
 
 void GameOverScene::goToGameScene(CCObject* sender)
 {
-	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, GameLayer::scene()));
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, GameScene::scene()));
 }
 
 void GameOverScene::goToMenuScene(CCObject* sender)

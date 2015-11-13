@@ -10,7 +10,7 @@
 * EULA and have agreed to be bound by its terms.
 */
 #include "HUDlayer.h"
-#include "GameLayer.h"
+#include "GameScene.h"
 #include "MainMenuScene.h"
 #include <iostream>
 
@@ -58,7 +58,7 @@ bool HUDLayer::initHUDLayer()
 	m_visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 	m_origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-	m_parent = (GameLayer*)this->getParent();
+	m_parent = (GameScene*)this->getParent();
 
 /// Labels
 	m_scoreLabel = CCLabelBMFont::create("S: 0", "./fonts/PixelFont.fnt");

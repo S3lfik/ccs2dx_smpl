@@ -6,7 +6,7 @@
 
 using namespace cocos2d;
 
-class GameLayer;
+class GameScene;
 
 class HUDLayer : public cocos2d::CCLayer
 {
@@ -33,7 +33,7 @@ private:
 	CCMenu* m_pauseMenu;
 	CCMenu* m_resumeMenu;
 	
-	GameLayer* m_parent;
+	GameScene* m_parent;
 };
 
 #endif //__HUDLAYER_H__

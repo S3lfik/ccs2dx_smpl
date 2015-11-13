@@ -12,7 +12,7 @@
 #include "cocos2d.h"
 #include "CCEGLView.h"
 #include "AppDelegate.h"
-#include "GameLayer.h"
+#include "GameScene.h"
 #include "MainMenuScene.h"
 
 USING_NS_CC;
