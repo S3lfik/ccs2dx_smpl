@@ -39,7 +39,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 
 	// Set FPS. the default value is 1.0/60 if you don't call this
 	pDirector->setAnimationInterval(1.0 / 60);
-
+	//CCFileUtils::sharedFileUtils()->setSearchPaths(path);
     // Create a scene
     CCScene *pScene = MainMenuLayer::scene();
 

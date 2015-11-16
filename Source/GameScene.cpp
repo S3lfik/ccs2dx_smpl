@@ -60,29 +60,113 @@ bool GameScene::init()
 	m_leftRect = CCRectMake(0.f, 0.f, m_visibleSize.width / 2, m_visibleSize.height);
 	m_rightRect = CCRectMake(m_visibleSize.width / 2, 0.f, m_visibleSize.width / 2, m_visibleSize.height);
 
+	m_gravity = CCPoint(0.f, -5.f);
 	m_jumping = false;
 	m_jumpTimer = 0.f;
 	m_score = 0;
 	m_hp = 100;
 	m_timer = 0.f;
 	m_paused = false;
+	m_actionState = ActionStateNone;
+	m_playerState = PlayerStateNone;
 
 	m_background = BackgroundLayer::createBackground(5.f);
 	this->addChild((CCLayer*)m_background, -20);
 	m_hudLayer = HUDLayer::createHUDLayer();
-	this->addChild(m_hudLayer);
+	this->addChild(m_hudLayer, 10);
 
-	m_hero = CCSprite::create("./textures/tinyBazooka.png");
+	m_hero = CCSprite::create("textures/tinyBazooka.png");
 	m_hero->setPosition(CCPoint(m_visibleSize.width / 4, m_visibleSize.height / 2)); 
-	this->addChild(m_hero, -1);
+	this->addChild(m_hero, -5);
+
+	initHeroAnimations();
 
     return true;
+}
+
+void GameScene::initHeroAnimations()
+{
+	// Animation
+
+	CCSpriteBatchNode * spriteBatch = CCSpriteBatchNode::create("textures/player_anim/player_anim.png");
+	CCSpriteFrameCache* cache = CCSpriteFrameCache::sharedSpriteFrameCache();
+	cache->addSpriteFramesWithFile("textures/player_anim/player_anim.plist");
+
+	m_hero->createWithSpriteFrameName("player_idle_1.png");
+	m_hero->addChild(spriteBatch);
+
+	// Idle Animation
+
+	CCArray* idleAnimFrames = CCArray::createWithCapacity(4);
+	char str1[100] = { 0 };
+	for (int i = 1; i <= 4; ++i)
+	{
+		sprintf(str1, "player_idle_%d.png", i);
+		CCSpriteFrame* frame = cache->spriteFrameByName(str1);
+		idleAnimFrames->addObject(frame);
+	}
+	CCAnimation* idleAnimation = CCAnimation::createWithSpriteFrames(idleAnimFrames, 0.25f);
+	m_idleAction = CCRepeatForever::create(CCAnimate::create(idleAnimation));
+	m_idleAction->retain();
+
+	// Boost animation
+
+	CCArray* boostAnimaFrames = CCArray::createWithCapacity(4);
+	char str2[100] = { 0 };
+	for (int i = 1; i <= 4; ++i)
+	{
+		sprintf(str2, "player_boost_%d.png", i);
+		CCSpriteFrame* frame = cache->spriteFrameByName(str2);
+		boostAnimaFrames->addObject(frame);
+	}
+
+	CCAnimation* boostAnimation = CCAnimation::createWithSpriteFrames(boostAnimaFrames, 0.25f);
+	m_boostAction = CCRepeatForever::create(CCAnimate::create(boostAnimation));
+	m_boostAction->retain();
+}
+
+void GameScene::idleAnimation()
+{
+	
+	if (m_actionState == ActionStateIdle)
+		return;
+	std::cout << "Idle animation" << std::endl;
+ 	m_hero->stopAllActions();
+	m_hero->runAction(m_idleAction);
+	m_actionState = ActionStateIdle;
+}
+
+void GameScene::boostAnimation()
+{
+	if (m_actionState == ActionStateBoost)
+		return;
+
+	std::cout << "Boost animation" << std::endl;
+	m_hero->stopAllActions();
+	m_hero->runAction(m_boostAction);
+	m_actionState = ActionStateBoost;
+}
+
+void GameScene::updateAnimationState()
+{
+	switch (m_playerState)
+	{
+	case PlayerStateIdle:
+		idleAnimation();
+		break;
+	case PlayerStateBoost:
+		boostAnimation();
+		break;
+
+	default: break;
+	}
 }
 
 void GameScene::update(float dt)
 {
 	updateHero(dt);
 	adaptPlayerPosition();
+	updateAnimationState();
 
 	spawnEnemies(dt);	
 	updateEnemies(dt);
@@ -108,20 +192,22 @@ void GameScene::updateHero(float dt)
 		m_jumping = false;
 	}
 
+	CCPoint pos = m_hero->getPosition();
+
 	if (m_jumpTimer > 0.f)
 	{
+		m_playerState = PlayerStateBoost;
 		m_jumpTimer -= dt;
-		CCPoint pos = m_hero->getPosition();
 		pos.y += 3;
-		m_hero->setPosition(pos);
 	}
 	else
 	{
+		m_playerState = PlayerStateIdle;
 		m_jumpTimer = 0.f;
-		CCPoint pos = m_hero->getPosition();
 		pos = ccpAdd(pos, m_gravity);
-		m_hero->setPosition(pos);
 	}
+
+	m_hero->setPosition(pos);
 }
 
 void GameScene::updateProjectiles(float dt)
@@ -227,8 +313,8 @@ void GameScene::spawnEnemies(float dt)
 
 	if (m_timer >= 3.f)
 	{
-		Enemy* enemy = Enemy::createEnemy("./textures/enemy.png");
-		this->addChild(enemy);
+		Enemy* enemy = Enemy::createEnemy("textures/enemy.png");
+		this->addChild(enemy, 5);
 		m_enemies->addObject(enemy);
 
 		m_timer = 0.f;

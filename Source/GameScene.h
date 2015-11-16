@@ -26,13 +26,27 @@ using namespace cocos2d;
 
 class GameScene : public cocos2d::CCLayer
 {
-protected:
-    b2World*		world;		// Instance of physics world
+public:
+	enum ActionState
+	{
+		ActionStateNone = 0,
+		ActionStateIdle,
+		ActionStateBoost
+	};
+
+	enum PlayerState
+	{
+		PlayerStateNone = 0,
+		PlayerStateIdle,
+		PlayerStateBoost
+	};
+
 public:
     ~GameScene();
     
     // Init method
     virtual bool init();
+	
 
 	// Main update loop
 	void update(float dt);
@@ -59,6 +73,10 @@ public:
 	void pauseGame();
 	void resumeGame();
 
+	void initHeroAnimations();
+	void idleAnimation();
+	void boostAnimation();
+	void updateAnimationState();
 	
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
 	virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
@@ -72,32 +90,42 @@ public:
 
 	CCArray* getEnemies() const;
 	CCArray* getBullets() const;
+
+protected:
+	b2World*		world;		// Instance of physics world
+
 private:
-	CCSprite* m_hero;
-	CCArray* m_enemies;
-	CCArray* m_bullets;
-	CCArray* m_removables;
-	CCArray* m_removableBullets;
+	CCSize				m_visibleSize;
+	CCPoint				m_origin;
 
-	CCRect m_leftRect;
-	CCRect	m_rightRect;
-	CCPoint m_gravity;
+	CCSprite*			m_hero;
+	CCArray*			m_enemies;
+	CCArray*			m_bullets;
+	CCArray*			m_removables;
+	CCArray*			m_removableBullets;
 
-	bool m_jumping;
-	float m_jumpTimer;
+	CCRect				m_leftRect;
+	CCRect				m_rightRect;
+	CCPoint				m_gravity;
 
-	CCSize m_visibleSize;
-	CCPoint m_origin;
+	CCAction*			m_boostAction;
+	CCAction*			m_idleAction;
 
-	int m_score;
-	int m_hp;
+	bool				m_jumping;
+	float				m_jumpTimer;
 
-	CCLayer* m_hudLayer;
-	BackgroundLayer* m_background;
+	ActionState			m_actionState;
+	PlayerState			m_playerState;
 
-	float m_timer;
+	int					m_score;
+	int					m_hp;
 
-	bool m_paused;
+	CCLayer*			m_hudLayer;
+	BackgroundLayer*	m_background;
+
+	float				m_timer;
+
+	bool				m_paused;
 };
 
 #endif // __GAMELAYER_H__

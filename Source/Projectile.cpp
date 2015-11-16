@@ -33,9 +33,9 @@ bool Projectile::initProjectile(cocos2d::CCPoint point, Type type)
 	bool result = true;
 
 	if (m_type == Rocket)
-		result = this->initWithFile("./textures/rocket.png");
+		result = this->initWithFile("textures/rocket.png");
 	else if (m_type == Bullet)
-		result = this->initWithFile("./textures/bullet.png");
+		result = this->initWithFile("textures/bullet.png");
 
 	this->setPosition(point);
 	return result;
