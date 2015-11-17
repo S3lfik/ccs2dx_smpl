@@ -48,7 +48,7 @@ bool Enemy::initEnemy(std::string filename)
 	char str1[100] = { 0 };
 	for (int i = 1; i <= 4; ++i)
 	{
-		sprintf(str1, "enemy_anim_%d.png", i);
+		sprintf(str1, "enemy_anim_%d.png", i); 
 		CCSpriteFrame* frame = cache->spriteFrameByName(str1);
 		enemyAnimFrames->addObject(frame);
 	}

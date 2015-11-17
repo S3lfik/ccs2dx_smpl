@@ -35,7 +35,8 @@ bool MainMenuLayer::init()
 	CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-	CCSprite* sprite = CCSprite::create("./textures/Bg.png");
+	//CCSprite* sprite = CCSprite::create("./textures/Bg.png");
+	CCSprite* sprite = CCSprite::create("Bg.png");
 	sprite->setPosition(CCPoint(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(sprite, -1);
 

@@ -81,6 +81,10 @@ bool GameScene::init()
 
 	initHeroAnimations();
 
+	m_flamesParticle = CCParticleSystemQuad::create("jetBoost.plist");
+	m_flamesParticle->setPosition(ccpAdd(m_hero->getPosition(), ccp(-m_hero->getContentSize().width * 0.25f, -m_hero->getContentSize().height * 0.25f)));
+	this->addChild(m_flamesParticle);
+	
     return true;
 }
 
@@ -167,6 +171,8 @@ void GameScene::update(float dt)
 	updateHero(dt);
 	adaptPlayerPosition();
 	updateAnimationState();
+	
+	m_flamesParticle->setPosition(ccpAdd(m_hero->getPosition(), ccp(-m_hero->getContentSize().width * 0.25f, -m_hero->getContentSize().height * 0.25f)));
 
 	spawnEnemies(dt);	
 	updateEnemies(dt);
@@ -231,10 +237,22 @@ void GameScene::updateProjectiles(float dt)
 			{
 				for (uint i = 0; i < m_enemies->count(); ++i)
 				{
-					if (checkCollisions((CCSprite*)m_enemies->objectAtIndex(i), proj) && proj->getType() == Projectile::Rocket)
+					Enemy* en = dynamic_cast<Enemy*>(m_enemies->objectAtIndex(i));
+					if (checkCollisions(en, proj) && proj->getType() == Projectile::Rocket)
 					{
 						m_removableBullets->addObject(proj);
 						m_removables->addObject(m_enemies->objectAtIndex(i));
+						////////
+						CCParticleSystemQuad * smokeParticle = CCParticleSystemQuad::create("textures/smoke.plist");//CCParticleSystemQuad 
+						smokeParticle->setPosition(en->getPosition());
+						this->addChild(smokeParticle);
+						smokeParticle->setAutoRemoveOnFinish(true);
+						//////////
+						CCParticleSystemQuad * dustParticle = CCParticleSystemQuad::create("textures/dusts.plist");
+						dustParticle->setPosition(en->getPosition());
+						this->addChild(dustParticle);
+						dustParticle->setAutoRemoveOnFinish(true);
+
 						updateScore(); //score value here
 					}
 				}
@@ -286,8 +304,10 @@ void GameScene::updateEnemies(float dt)
 			Enemy* enemy = dynamic_cast<Enemy*>(ob);
 			m_removables->removeObject(enemy);
 			m_enemies->removeObject(enemy);
+			std::cout << "Enemy retain: " << enemy->retainCount() << std::endl;
 			this->removeChild(enemy, true);
-			std::cout << "Enemy removed" << std::endl;
+			std::cout << "Enemy retain: " << enemy->retainCount() << std::endl;
+			std::cout << "Enemy total: " << m_removables->count() << std::endl;
 		}
 	}
 }
@@ -328,8 +348,21 @@ void GameScene::fireRocket()
 
 	pos.x += m_hero->getContentSize().width / 2;
 	pos.y -= m_hero->getContentSize().height / 20;
-
 	Projectile* rocket = Projectile::createProjectile(pos, Projectile::Rocket);
+	CCParticleSystemQuad* emmiter = CCParticleExplosion::create();
+	emmiter->setPosition(rocket->getPosition());
+	emmiter->setStartColor(ccc4f(1.f, 1.f, 1.f, 1.f));
+	emmiter->setEndColor(ccc4f(0.f, 0.f, 0.f, 0.f));
+	emmiter->setTotalParticles(10);
+	emmiter->setLife(0.5f);
+	emmiter->setSpeed(2.f);
+	emmiter->setSpeedVar(30.f);
+	emmiter->setEmitterMode(kCCParticleModeGravity);
+	emmiter->setGravity(ccp(-30.f, 20.f));
+	emmiter->setAutoRemoveOnFinish(true);
+	this->addChild(emmiter);
+
+	
 	this->addChild(rocket, -1);
 	m_bullets->addObject(rocket);
 }

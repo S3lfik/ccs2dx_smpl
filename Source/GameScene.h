@@ -111,6 +111,8 @@ private:
 	CCAction*			m_boostAction;
 	CCAction*			m_idleAction;
 
+	CCParticleSystemQuad*	m_flamesParticle;
+
 	bool				m_jumping;
 	float				m_jumpTimer;
 
