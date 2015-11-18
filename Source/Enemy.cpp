@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "GameScene.h"
+#include "SimpleAudioEngine.h"
 
 using namespace cocos2d;
 
@@ -87,7 +88,8 @@ void Enemy::shoot(float dt)
 	GameScene* layer = (GameScene*)this->getParent();
 	layer->addChild(proj, -5);
 	layer->getBullets()->addObject(proj);	
-	m_timer = 0.f;
+	m_timer = 0.f; 
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/gunshot.wav", false);
 }
 
 void Enemy::setShootingInterval(float interval)

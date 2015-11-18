@@ -12,6 +12,7 @@
 #include "GameOverScene.h"
 #include "GameScene.h"
 #include "MainMenuScene.h"
+#include "SimpleAudioEngine.h"
 #include <iostream>
 
 GameOverScene::~GameOverScene()
@@ -89,10 +90,12 @@ void GameOverScene::update(float dt)
 
 void GameOverScene::goToGameScene(CCObject* sender)
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/pop.wav", false);
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, GameScene::scene()));
 }
 
 void GameOverScene::goToMenuScene(CCObject* sender)
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/pop.wav", false);
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, MainMenuLayer::scene()));
 }

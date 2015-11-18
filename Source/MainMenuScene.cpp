@@ -1,5 +1,6 @@
 #include "MainMenuScene.h"
 #include "GameScene.h"
+#include "SimpleAudioEngine.h"
 #include <iostream>
 
 MainMenuLayer::~MainMenuLayer()
@@ -60,5 +61,6 @@ void MainMenuLayer::update(float dt)
 
 void MainMenuLayer::goToGameScene(CCObject* sender)
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/pop.wav", false);
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, GameScene::scene()));
 }

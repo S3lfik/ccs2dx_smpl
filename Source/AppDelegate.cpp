@@ -14,6 +14,7 @@
 #include "AppDelegate.h"
 #include "GameScene.h"
 #include "MainMenuScene.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -42,11 +43,24 @@ bool AppDelegate::applicationDidFinishLaunching()
 	
 	CCFileUtils::sharedFileUtils()->setResourceDirectory("./textures/");
 
+	
+
     // Create a scene
     CCScene *pScene = MainMenuLayer::scene();
 
     // Run
     pDirector->runWithScene(pScene);
+
+	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bgMusic.wav", true);
+	
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("audio/enemyKill.wav");
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("audio/fireRocket.wav");
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("audio/gunshot.wav");
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("audio/playerKill.wav");
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("audio/pop.wav");
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("audio/rocketExplode.wav");
+
+	
 
 	return true;
 }
@@ -54,10 +68,10 @@ bool AppDelegate::applicationDidFinishLaunching()
 void AppDelegate::applicationDidEnterBackground()
 {
 	CCDirector::sharedDirector()->pause();
-	std::cout << "paused" << std::endl;
-
+	 
+	
 	// if you use SimpleAudioEngine, it must be pause
-	// SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 }
 
 void AppDelegate::applicationWillEnterForeground()
@@ -66,7 +80,7 @@ void AppDelegate::applicationWillEnterForeground()
 	std::cout << "We're back!" << std::endl;
 
 	// if you use SimpleAudioEngine, it must resume here
-	// SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
 }
 
 void AppDelegate::UpdateProjection(float angle, float& w, float& h)

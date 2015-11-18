@@ -14,6 +14,7 @@
 #include "BackgroundLayer.h"
 #include "MainMenuScene.h"
 #include "GameOverScene.h"
+#include "SimpleAudioEngine.h"
 #include <memory>
 
 GameScene::~GameScene()
@@ -84,6 +85,8 @@ bool GameScene::init()
 	m_flamesParticle = CCParticleSystemQuad::create("jetBoost.plist");
 	m_flamesParticle->setPosition(ccpAdd(m_hero->getPosition(), ccp(-m_hero->getContentSize().width * 0.25f, -m_hero->getContentSize().height * 0.25f)));
 	this->addChild(m_flamesParticle);
+
+	
 	
     return true;
 }
@@ -205,6 +208,7 @@ void GameScene::updateHero(float dt)
 		m_playerState = PlayerStateBoost;
 		m_jumpTimer -= dt;
 		pos.y += 3;
+		//m_flamesParticle->setTotalParticles()
 	}
 	else
 	{
@@ -242,16 +246,18 @@ void GameScene::updateProjectiles(float dt)
 					{
 						m_removableBullets->addObject(proj);
 						m_removables->addObject(m_enemies->objectAtIndex(i));
-						////////
-						CCParticleSystemQuad * smokeParticle = CCParticleSystemQuad::create("textures/smoke.plist");//CCParticleSystemQuad 
+						
+						CCParticleSystemQuad * smokeParticle = CCParticleSystemQuad::create("textures/smoke.plist"); 
 						smokeParticle->setPosition(en->getPosition());
 						this->addChild(smokeParticle);
 						smokeParticle->setAutoRemoveOnFinish(true);
-						//////////
+						
 						CCParticleSystemQuad * dustParticle = CCParticleSystemQuad::create("textures/dusts.plist");
 						dustParticle->setPosition(en->getPosition());
 						this->addChild(dustParticle);
 						dustParticle->setAutoRemoveOnFinish(true);
+						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/rocketExplode.wav", false);
+						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/enemyKill.wav", false);
 
 						updateScore(); //score value here
 					}
@@ -288,6 +294,7 @@ void GameScene::updateEnemies(float dt)
 				m_removables->addObject(enemy);
 			else if (checkCollisions(m_hero, enemy))
 			{
+				CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/enemyKill.wav", false);
 				m_removables->addObject(enemy);
 				updateHealth(20);
 				updateScore();
@@ -304,10 +311,7 @@ void GameScene::updateEnemies(float dt)
 			Enemy* enemy = dynamic_cast<Enemy*>(ob);
 			m_removables->removeObject(enemy);
 			m_enemies->removeObject(enemy);
-			std::cout << "Enemy retain: " << enemy->retainCount() << std::endl;
 			this->removeChild(enemy, true);
-			std::cout << "Enemy retain: " << enemy->retainCount() << std::endl;
-			std::cout << "Enemy total: " << m_removables->count() << std::endl;
 		}
 	}
 }
@@ -362,7 +366,7 @@ void GameScene::fireRocket()
 	emmiter->setAutoRemoveOnFinish(true);
 	this->addChild(emmiter);
 
-	
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/fireRocket.wav", false);
 	this->addChild(rocket, -1);
 	m_bullets->addObject(rocket);
 }
@@ -396,6 +400,7 @@ bool GameScene::checkCollisions(CCSprite* slhs, CCSprite* srhs) const
 
 void GameScene::gameOver()
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/playerKill.wav", false);
 	CCUserDefault::sharedUserDefault()->setIntegerForKey("highScore", m_score);
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.f, GameOverScene::scene()));
 }
@@ -416,12 +421,14 @@ void GameScene::pauseGame()
 	//	}
 	//}
 	//m_paused = true;
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/pop.wav", false);
 	std::cout << "GameScene::pauseGame" << std::endl;
 }
 
 void GameScene::resumeGame()
 {
 	std::cout << "GameScene::resumeGame" << std::endl;
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/pop.wav", false);
 	//this->unscheduleUpdate();
 	//this->schedule(schedule_selector(GameScene::spawnEnemies), 3.f);
 	//if (m_enemies->count() > 0)
